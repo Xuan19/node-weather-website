@@ -1,15 +1,17 @@
 const request = require('request')
 
-const forecast = (latitude, longitude, callback) => {
-    const url = 'https://api.darksky.net/forecast/9d1465c6f3bb7a6c71944bdd8548d026/' + latitude + ',' + longitude
+const forecast = (city, callback) => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=98b7465353d383f3d0f3bc4a284a48ae`
 
     request({ url, json: true }, (error, { body }) => {
         if (error) {
+            // console.log(error)
             callback('Unable to connect to weather service!', undefined)
-        } else if (body.error) {
+        } else if (body.message) {
+            console.log(body.message)
             callback('Unable to find location', undefined)
         } else {
-            callback(undefined, body.daily.data[0].summary + ' It is currently ' + body.currently.temperature + ' degress out. There is a ' + body.currently.precipProbability + '% chance of rain.')
+            callback(undefined, ' It is currently ' + parseFloat(body.main.temp-273.15).toFixed(2)  +' degrees out, '+ body.weather[0].description +', feels like ' + parseFloat(body.main.feels_like-273.15).toFixed(2) + ' degrees')
         }
     })
 }
